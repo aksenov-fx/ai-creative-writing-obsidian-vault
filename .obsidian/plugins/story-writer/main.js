@@ -49,46 +49,72 @@ var CommandManager = class {
   }
   getCommandsHash() {
     return {
-      "set-prompt": {
-        name: "Set user prompt",
-        hotkeys: [{ modifiers: ["Alt"], key: "S" }],
-        callback: () => this.plugin.communicationManager.sendNoteCommand("set_prompt")
-      },
+      // Chat and story commands
       "write-scene-or-chat": {
         name: "Write Scene/Chat",
         hotkeys: [{ modifiers: ["Alt"], key: "W" }],
         callback: () => this.plugin.communicationManager.sendNoteCommand("write_scene_or_chat")
-      },
-      "custom-prompt": {
-        name: "Custom Prompt",
-        hotkeys: [{ modifiers: ["Alt"], key: "C" }],
-        callback: () => this.plugin.communicationManager.sendNoteCommand("custom_prompt")
       },
       "remove-last-response": {
         name: "Remove Last Response",
         hotkeys: [{ modifiers: ["Alt"], key: "Z" }],
         callback: () => this.plugin.communicationManager.sendNoteCommand("remove_last_response")
       },
+      // Story commands
+      "custom-prompt": {
+        name: "Custom Prompt",
+        hotkeys: [{ modifiers: ["Alt"], key: "C" }],
+        callback: () => this.plugin.communicationManager.sendNoteCommand("story.custom_prompt")
+      },
       "rewrite-part": {
         name: "Rewrite part",
-        callback: () => this.plugin.communicationManager.sendNoteCommand("rewrite_part")
+        callback: () => this.plugin.communicationManager.sendNoteCommand("story.rewrite_part")
       },
       "rewrite-parts": {
         name: "Rewrite this and following parts",
-        callback: () => this.plugin.communicationManager.sendNoteCommand("rewrite_parts")
+        callback: () => this.plugin.communicationManager.sendNoteCommand("story.rewrite_parts")
       },
       "regenerate": {
         name: "Regenerate",
-        callback: () => this.plugin.communicationManager.sendNoteCommand("regenerate")
+        callback: () => this.plugin.communicationManager.sendNoteCommand("story.regenerate")
       },
       "add-part": {
         name: "Add Part",
-        callback: () => this.plugin.communicationManager.sendNoteCommand("add_part")
+        callback: () => this.plugin.communicationManager.sendNoteCommand("story.add_part")
       },
       "update-summary": {
         name: "Update summary",
-        callback: () => this.plugin.communicationManager.sendNoteCommand("update_summary")
+        callback: () => this.plugin.communicationManager.sendNoteCommand("story.update_summary")
       },
+      // Helper commands
+      "rewrite-selection": {
+        name: "Rewrite selection",
+        callback: () => this.plugin.helperManager.rewriteSelection()
+      },
+      "translate": {
+        name: "Translate selection",
+        callback: () => this.plugin.helperManager.translateSelection()
+      },
+      "explain": {
+        name: "Explain selected word",
+        callback: () => this.plugin.helperManager.explainWord()
+      },
+      // Global commands
+      "set-prompt": {
+        name: "Set user prompt",
+        hotkeys: [{ modifiers: ["Alt"], key: "S" }],
+        callback: () => this.plugin.communicationManager.sendNoteCommand("global.set_prompt")
+      },
+      "switch-debug": {
+        name: "Switch Debug Mode On/Off",
+        callback: () => this.plugin.communicationManager.sendNoteCommand("global.switch_debug")
+      },
+      "interrupt-write": {
+        name: "Interrupt Write",
+        hotkeys: [{ modifiers: ["Alt"], key: "Q" }],
+        callback: () => this.plugin.communicationManager.sendNoteCommand("global.interrupt_write")
+      },
+      // Model commands
       "set-model-1": {
         name: "Set model 1",
         hotkeys: [{ modifiers: ["Alt"], key: "1" }],
@@ -118,27 +144,6 @@ var CommandManager = class {
         name: "Reset model",
         hotkeys: [{ modifiers: ["Alt"], key: "R" }],
         callback: async () => await this.plugin.utilityManager.setModelNumber("")
-      },
-      "rewrite-selection": {
-        name: "Rewrite selection",
-        callback: () => this.plugin.helperManager.rewriteSelection()
-      },
-      "translate": {
-        name: "Translate selection",
-        callback: () => this.plugin.helperManager.translateSelection()
-      },
-      "explain": {
-        name: "Explain selected word",
-        callback: () => this.plugin.helperManager.explainWord()
-      },
-      "switch-debug": {
-        name: "Switch Debug Mode On/Off",
-        callback: () => this.plugin.communicationManager.sendNoteCommand("switch_debug")
-      },
-      "interrupt-write": {
-        name: "Interrupt Write",
-        hotkeys: [{ modifiers: ["Alt"], key: "Q" }],
-        callback: () => this.plugin.communicationManager.sendNoteCommand("interrupt_write")
       }
     };
   }
@@ -171,10 +176,10 @@ var CommunicationManager = class {
   }
   async getFinalMethodName(chatMode, methodName) {
     if (methodName === "write_scene_or_chat") {
-      return chatMode ? "chat" : "write_scene";
+      return chatMode ? "chat.chat" : "story.write_scene";
     }
     if (methodName === "remove_last_response") {
-      return chatMode ? "chat_remove_last_response" : "story_remove_last_response";
+      return chatMode ? "chat.remove_last_response" : "story.remove_last_response";
     }
     return methodName;
   }
@@ -184,7 +189,8 @@ var CommunicationManager = class {
     const partNumber = this.plugin.utilityManager.getPartNumber();
     const chatMode = await this.plugin.utilityManager.getMode();
     const finalMethodName = await this.getFinalMethodName(chatMode, methodName);
-    const parameters = `${absoluteFolderPath},${absoluteFilePath},${finalMethodName},${chatMode},${partNumber},${selected_text}`;
+    const [mode, method] = finalMethodName.split(".");
+    const parameters = `${absoluteFolderPath},${absoluteFilePath},${mode},${method},${partNumber},${selected_text}`;
     const response = await this.sendCommandToServer(parameters);
     return response;
   }
@@ -318,7 +324,7 @@ var HelperManager = class {
     return response;
   }
   async rewriteSelection() {
-    const response = await this._processSelection("rewrite_selection");
+    const response = await this._processSelection("helper.rewrite_selection");
     if (!response)
       return;
     const editor = this.plugin.utilityManager.getEditor();
@@ -331,13 +337,13 @@ var HelperManager = class {
     }
   }
   async translateSelection() {
-    const response = await this._processSelection("translate");
+    const response = await this._processSelection("helper.translate");
     if (response) {
       new import_obsidian3.Notice(response);
     }
   }
   async explainWord() {
-    const response = await this._processSelection("explain");
+    const response = await this._processSelection("helper.explain");
     if (response) {
       new import_obsidian3.Notice(response);
     }
