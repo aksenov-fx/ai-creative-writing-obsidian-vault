@@ -82,6 +82,10 @@ var CommandManager = class {
         name: "Add Part",
         callback: () => this.plugin.communicationManager.sendNoteCommand("story.add_part")
       },
+      "continue-response": {
+        name: "Continue Response",
+        callback: () => this.plugin.communicationManager.sendNoteCommand("story.continue_response")
+      },
       "update-summary": {
         name: "Update summary",
         callback: () => this.plugin.communicationManager.sendNoteCommand("story.update_summary")

@@ -1,7 +1,6 @@
 {
   "pinned": [
     "story-writer:set-prompt",
-    "story-writer:write-scene",
     "story-writer:custom-prompt",
     "story-writer:interrupt-write",
     "story-writer:remove-last-response",
@@ -13,7 +12,7 @@
     "story-writer:rewrite-parts",
     "story-writer:regenerate",
     "story-writer:add-part",
-    "story-writer:summarize",
+    "story-writer:continue-response",
     "story-writer:update-summary",
     "story-writer:translate",
     "story-writer:explain",

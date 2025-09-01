@@ -23,14 +23,21 @@ Use the following hotkeys:
 **Alt+Z** - Delete last response  
 **Alt+~** - Stop writing  
 **Alt+T** - Manage workspaces  
-**Alt+E** - Save and change workspace
+**Alt+E** - Save and change workspace  
+**Alt+R** - Reset model to default  
 
 **Alt+1-5** - Set model number 
-Models are listed in `_includes\Settings\Models.yaml`  
+Models are set in `_includes\Settings\Models.yaml`  
 Default model can be changed in `_includes\Settings\Settings.yaml`  
 To chat with model without updating `Models.yaml`, input the model name from OpenRouter into frontmatter `Model` property instead of model number
 
-**Alt+R** - Reset model
+Current models:
+1. Deepseek R1  
+2. Kimi K2  
+3. Deepseek V3.1  
+4. Claude 4  
+5. Gemini 2.5 Flash  
+
 
 ## Obsidian Story writing commands
 **Write Scene**  
@@ -53,6 +60,14 @@ Regenerate a selected part of the story
 
 **Add Part**  
 Add a new story part after a selected part  
+
+**Continue response**  
+Continues the selected part.
+*Note: to the model the text appears as the beginning of its own response - not as user request.*
+*Different inference providers process such requests differently and some may work incorrectly.*
+*It is possible to exclude these providers from routing requests in Openrouter settings.*
+
+**
 
 **Remove Last Response**  
 Remove last story part  
