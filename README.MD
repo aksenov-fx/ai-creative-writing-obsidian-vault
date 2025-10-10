@@ -34,8 +34,8 @@ To chat with model without updating `Models.yaml`, input the model name from Ope
 Current models:
 1. Deepseek R1  
 2. Kimi K2  
-3. Deepseek V3.1  
-4. Claude 4  
+3. Deepseek V3.2  
+4. Claude 4.5  
 5. Gemini 2.5 Flash  
 
 
