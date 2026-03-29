@@ -194,7 +194,7 @@ var CommunicationManager = class {
     const chatMode = await this.plugin.utilityManager.getMode();
     const finalMethodName = await this.getFinalMethodName(chatMode, methodName);
     const [mode, method] = finalMethodName.split(".");
-    const parameters = `${absoluteFolderPath},${absoluteFilePath},${mode},${method},${partNumber},${selected_text}`;
+    const parameters = `${absoluteFolderPath}|${absoluteFilePath}|${mode}|${method}|${partNumber}|${selected_text}`;
     const response = await this.sendCommandToServer(parameters);
     return response;
   }
